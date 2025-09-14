@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced ABE Desktop Demo</title>
+    <style>
+        :root {
+            --light-bg: #f0f0f0;
+            --light-fg: #000;
+            --light-button: #e0e0e0;
+            --dark-bg: #2b2b2b;
+            --dark-fg: #e8e8e8;
+            --dark-button: #444;
+            --accent: #7fffd4;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --error: #F44336;
+            --info: #2196F3;
+            --border-light: #ccc;
+            --border-dark: #555;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            color: var(--light-fg);
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+
+        body.dark-theme {
+            background-color: var(--dark-bg);
+            color: var(--dark-fg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 20px;
+        }
+
+        body.dark-theme header {
+            border-bottom-color: var(--border-dark);
+        }
+
+        h1, h2, h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        body.dark-theme .card {
+            background-color: #333;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn {
+            background-color: var(--light-button);
+            color: var(--light-fg);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            margin: 5px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        body.dark-theme .btn {
+            background-color: var(--dark-button);
+            color: var(--dark-fg);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background-color: var(--info);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: black;
+        }
+
+        .btn-error {
+            background-color: var(--error);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-light);
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #fff;
+            color: #000;
+            font-family: inherit;
+        }
+
+        body.dark-theme input[type="text"],
+        body.dark-theme input[type="password"],
+        body.dark-theme input[type="email"],
+        body.dark-theme input[type="number"],
+        body.dark-theme select,
+        body.dark-theme textarea {
+            background-color: #444;
+            color: #fff;
+            border-color: var(--border-dark);
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 50px auto;
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .two-column {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .column {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .file-list {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .file-list th,
+        .file-list td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        body.dark-theme .file-list th,
+        body.dark-theme .file-list td {
+            border-bottom-color: var(--border-dark);
+        }
+
+        .file-list th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        body.dark-theme .file-list th {
+            background-color: #3a3a3a;
+        }
+
+        .file-list tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        body.dark-theme .file-list tr:hover {
+            background-color: #3f3f3f;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        body.dark-theme .modal-content {
+            background-color: #333;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        body.dark-theme .modal-header {
+            border-bottom-color: var(--border-dark);
+        }
+
+        .close {
+            font-size: 24px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .progress-container {
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        body.dark-theme .progress-bar {
+            background-color: #444;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--info);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status-bar {
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-top: 1px solid var(--border-light);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            left: 0;
+        }
+
+        body.dark-theme .status-bar {
+            background-color: #333;
+            border-top-color: var(--border-dark);
+        }
+
+        .theme-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .preview-container {
+            margin-top: 20px;
+            border: 1px solid var(--border-light);
+            padding: 10px;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        body.dark-theme .preview-container {
+            border-color: var(--border-dark);
+        }
+
+        .policy-builder {
+            margin-bottom: 20px;
+        }
+
+        .condition {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .condition select,
+        .condition input {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .log-entry {
+            font-family: monospace;
+            margin-bottom: 5px;
+            padding: 5px;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.9em;
+        }
+
+        body.dark-theme .log-entry {
+            border-bottom-color: var(--border-dark);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-buttons .btn {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .search-box input {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                flex-direction: column;
+            }
+            
+            .condition {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div id="login-screen">
+            <div class="login-form card">
+                <h2>Advanced ABE Desktop Demo</h2>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="Enter your password">
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="login-btn">Login</button>
+                    <button class="btn" id="register-btn">Register</button>
+                </div>
+                <p style="margin-top: 20px; font-size: 0.9em; color: #666;">
+                    Note: Metadata stored locally (no DB)
+                </p>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="dashboard">
+            <header>
+                <h1>Advanced ABE Desktop Demo</h1>
+                <div class="theme-selector">
+                    <label for="theme-select">Theme:</label>
+                    <select id="theme-select">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                <div>
+                    <span id="user-info">Logged in as: </span>
+                    <button class="btn" id="logout-btn">Logout</button>
+                </div>
+            </header>
+
+            <div class="two-column">
+                <!-- Left Panel -->
+                <div class="column">
+                    <div class="card">
+                        <h3>User Information</h3>
+                        <div id="user-attributes">
+                            <!-- Will be populated with user attributes -->
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Actions</h3>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" id="upload-btn">Upload & Encrypt File</button>
+                            <button class="btn" id="policy-builder-btn">Policy Builder</button>
+                            <button class="btn" id="import-btn">Import Data</button>
+                            <button class="btn" id="export-btn">Export Data</button>
+                            <button class="btn" id="view-logs-btn">View Logs</button>
+                        </div>
+                    </div>
+
+                    <div class="card" id="admin-panel" style="display: none;">
+                        <h3>Admin Tools</h3>
+                        <div class="action-buttons">
+                            <button class="btn btn-warning" id="manage-users-btn">Manage Users</button>
+                            <button class="btn btn-warning" id="key-rotation-btn">Force Key Rotation</button>
+                            <button class="btn btn-warning" id="clean-blobs-btn">Clean Missing Blobs</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel -->
+                <div class="column">
+                    <div class="card">
+                        <h3>Files</h3>
+                        <div class="search-box">
+                            <input type="text" id="search-files" placeholder="Search files...">
+                            <button class="btn" id="refresh-btn">Refresh</button>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table class="file-list">
+                                <thead>
+                                    <tr>
+                                        <th data-sort="name">Name ↕</th>
+                                        <th data-sort="owner">Owner ↕</th>
+                                        <th data-sort="policy">Policy ↕</th>
+                                        <th data-sort="access">Access ↕</th>
+                                        <th data-sort="shared">Shared With ↕</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="files-list">
+                                    <!-- Will be populated with files -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Preview</h3>
+                        <div class="preview-container" id="preview-text">
+                            <!-- Text preview will appear here -->
+                            <p>Select a file to preview</p>
+                        </div>
+                        <div id="preview-image">
+                            <!-- Image preview will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <span id="status-message">Welcome! Please log in.</span>
+    </div>
+
+    <!-- Modals -->
+    <!-- Register Modal -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Register New Account</h3>
+                <span class="close" data-modal="register-modal">&times;</span>
+            </div>
+            <div class="form-group">
+                <label for="reg-email">Email:</label>
+                <input type="email" id="reg-email">
+            </div>
+            <div class="form-group">
+                <label for="reg-password">Password:</label>
+                <input type="password" id="reg-password">
+            </div>
+            <div class="form-group">
+                <label for="reg-role">Role:</label>
+                <select id="reg-role">
+                    <option value="researcher">Researcher</option>
+                    <option value="student">Student</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="reg-department">Department:</label>
+                <input type="text" id="reg-department">
+            </div>
+            <div class="form-group">
+                <label for="reg-clearance">Clearance:</label>
+                <input type="number" id="reg-clearance" value="1" min="1">
+            </div>
+            <div class="form-group">
+                <label for="reg-2fa">Enable 2FA (TOTP):</label>
+                <input type="checkbox" id="reg-2fa">
+            </div>
+            <button class="btn btn-success" id="register-submit">Create Account</button>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="upload-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Upload & Encrypt File</h3>
+                <span class="close" data-modal="upload-modal">&times;</span>
+            </div>
+            <div class="form-group">
+                <label for="file-input">Select File:</label>
+                <input type="file" id="file-input">
+            </div>
+            <div class="form-group">
+                <label for="policy-input">Policy JSON:</label>
+                <textarea id="policy-input" rows="6">{"all":[{"attr":"role","op":"==","value":"researcher"}]}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="share-input">Share With (comma-separated emails):</label>
+                <input type="text" id="share-input" placeholder="user1@example.com, user2@example.com">
+            </div>
+            <div class="progress-container">
+                <label>Upload Progress:</label>
+                <div class="progress-bar">
+                    <div class="progress" id="upload-progress"></div>
+                </div>
+                <div id="progress-text">0%</div>
+            </div>
+            <button class="btn btn-primary" id="upload-submit">Encrypt & Upload</button>
+        </div>
+    </div>
+
+    <!-- Policy Builder Modal -->
+    <div id="policy-builder-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Policy Builder</h3>
+                <span class="close" data-modal="policy-builder-modal">&times;</span>
+            </div>
+            <div class="form-group">
+                <label>Policy Type:</label>
+                <div>
+                    <input type="radio" name="policy-type" id="policy-all" value="all" checked>
+                    <label for="policy-all">All (AND)</label>
+                </div>
+                <div>
+                    <input type="radio" name="policy-type" id="policy-any" value="any">
+                    <label for="policy-any">Any (OR)</label>
+                </div>
+            </div>
+            <div class="policy-builder">
+                <h4>Conditions</h4>
+                <div id="conditions-container">
+                    <div class="condition">
+                        <select class="condition-attr">
+                            <option value="role">Role</option>
+                            <option value="department">Department</option>
+                            <option value="clearance">Clearance</option>
+                            <option value="email">Email</option>
+                        </select>
+                        <select class="condition-op">
+                            <option value="==">Equals</option>
+                            <option value="!=">Not Equals</option>
+                            <option value=">=">Greater or Equal</option>
+                            <option value="<=">Less or Equal</option>
+                            <option value=">">Greater Than</option>
+                            <option value="<">Less Than</option>
+                            <option value="in">In</option>
+                            <option value="contains">Contains</option>
+                        </select>
+                        <input type="text" class="condition-value" placeholder="Value">
+                        <button class="btn btn-error remove-condition">&times;</button>
+                    </div>
+                </div>
+                <button class="btn" id="add-condition">Add Condition</button>
+            </div>
+            <div class="form-group">
+                <label>Policy Result:</label>
+                <textarea id="policy-result" rows="4" readonly></textarea>
+            </div>
+            <button class="btn btn-primary" id="copy-policy">Copy Policy to Clipboard</button>
+        </div>
+    </div>
+
+    <!-- File Options Modal -->
+    <div id="file-options-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="file-options-title">File Options</h3>
+                <span class="close" data-modal="file-options-modal">&times;</span>
+            </div>
+            <div id="file-options-content">
+                <!-- Will be populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Viewer Modal -->
+    <div id="logs-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Access Logs</h3>
+                <span class="close" data-modal="logs-modal">&times;</span>
+            </div>
+            <div class="form-group">
+                <input type="text" id="log-user-filter" placeholder="Filter by user...">
+            </div>
+            <div class="form-group">
+                <input type="text" id="log-action-filter" placeholder="Filter by action...">
+            </div>
+            <button class="btn" id="refresh-logs">Refresh Logs</button>
+            <div class="preview-container" id="log-entries">
+                <!-- Log entries will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- User Manager Modal -->
+    <div id="user-manager-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>User Management</h3>
+                <span class="close" data-modal="user-manager-modal">&times;</span>
+            </div>
+            <div class="preview-container" id="user-list">
+                <!-- User list will appear here -->
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-error" id="delete-user-btn">Delete User</button>
+                <button class="btn btn-warning" id="rotate-user-btn">Force Key Rotation</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        const state = {
+            currentUser: null,
+            users: {},
+            files: {},
+            settings: {},
+            theme: 'light',
+            sortField: 'name',
+            sortDirection: 'asc'
+        };
+
+        // DOM Ready
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            bindEvents();
+            loadInitialData();
+        });
+
+        function initializeApp() {
+            // Set theme from settings or default to light
+            const savedTheme = localStorage.getItem('abe-theme') || 'light';
+            setTheme(savedTheme);
+            document.getElementById('theme-select').value = savedTheme;
+        }
+
+        function bindEvents() {
+            // Theme management
+            document.getElementById('theme-select').addEventListener('change', function() {
+                setTheme(this.value);
+            });
+            
+            // Modal handling
+            const modals = document.querySelectorAll('.modal');
+            const closeButtons = document.querySelectorAll('.close');
+            
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const modalId = this.getAttribute('data-modal');
+                    document.getElementById(modalId).style.display = 'none';
+                });
+            });
+            
+            window.addEventListener('click', function(event) {
+                modals.forEach(modal => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Login functionality
+            document.getElementById('login-btn').addEventListener('click', handleLogin);
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') handleLogin();
+            });
+            
+            // Register modal
+            document.getElementById('register-btn').addEventListener('click', function() {
+                document.getElementById('register-modal').style.display = 'flex';
+            });
+            
+            document.getElementById('register-submit').addEventListener('click', handleRegister);
+            
+            // Upload functionality
+            document.getElementById('upload-btn').addEventListener('click', function() {
+                document.getElementById('upload-modal').style.display = 'flex';
+            });
+            
+            document.getElementById('upload-submit').addEventListener('click', handleUpload);
+            
+            // Policy builder
+            document.getElementById('policy-builder-btn').addEventListener('click', function() {
+                document.getElementById('policy-builder-modal').style.display = 'flex';
+            });
+            
+            document.getElementById('add-condition').addEventListener('click', addCondition);
+            
+            // Add event listeners to existing condition inputs
+            document.querySelectorAll('.condition select, .condition input').forEach(input => {
+                input.addEventListener('change', updatePolicyResult);
+                input.addEventListener('input', updatePolicyResult);
+            });
+            
+            // Add event listener to remove buttons
+            document.querySelectorAll('.remove-condition').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.parentElement.remove();
+                    updatePolicyResult();
+                });
+            });
+            
+            // Add event listeners to policy type radio buttons
+            document.querySelectorAll('input[name="policy-type"]').forEach(radio => {
+                radio.addEventListener('change', updatePolicyResult);
+            });
+            
+            // Copy policy button
+            document.getElementById('copy-policy').addEventListener('click', function() {
+                const policyResult = document.getElementById('policy-result');
+                policyResult.select();
+                document.execCommand('copy');
+                updateStatus('Policy copied to clipboard', 'success');
+            });
+            
+            // Logout
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+            
+            // View logs
+            document.getElementById('view-logs-btn').addEventListener('click', function() {
+                document.getElementById('logs-modal').style.display = 'flex';
+                loadLogs();
+            });
+            
+            // Refresh files
+            document.getElementById('refresh-btn').addEventListener('click', loadFiles);
+            
+            // Search files
+            document.getElementById('search-files').addEventListener('input', loadFiles);
+            
+            // File list sorting
+            document.querySelectorAll('.file-list th').forEach(header => {
+                header.addEventListener('click', function() {
+                    const field = this.getAttribute('data-sort');
+                    sortFiles(field);
+                });
+            });
+            
+            // Refresh logs
+            document.getElementById('refresh-logs').addEventListener('click', loadLogs);
+            
+            // Admin functions
+            document.getElementById('manage-users-btn').addEventListener('click', function() {
+                document.getElementById('user-manager-modal').style.display = 'flex';
+                loadUsers();
+            });
+            
+            document.getElementById('clean-blobs-btn').addEventListener('click', handleCleanBlobs);
+            
+            document.getElementById('key-rotation-btn').addEventListener('click', handleGlobalKeyRotation);
+            
+            // Initialize policy result
+            updatePolicyResult();
+        }
+
+        function loadInitialData() {
+            // Load users and files from localStorage
+            state.users = JSON.parse(localStorage.getItem('abe-users') || '{}');
+            state.files = JSON.parse(localStorage.getItem('abe-files') || '{}');
+            state.settings = JSON.parse(localStorage.getItem('abe-settings') || '{}');
+            
+            // Check if user is already logged in
+            const savedUser = localStorage.getItem('abe-currentUser');
+            if (savedUser && state.users[savedUser]) {
+                state.currentUser = savedUser;
+                showDashboard();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('abe-users', JSON.stringify(state.users));
+            localStorage.setItem('abe-files', JSON.stringify(state.files));
+            localStorage.setItem('abe-settings', JSON.stringify(state.settings));
+            if (state.currentUser) {
+                localStorage.setItem('abe-currentUser', state.currentUser);
+            }
+        }
+
+        function setTheme(theme) {
+            state.theme = theme;
+            localStorage.setItem('abe-theme', theme);
+            
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+            
+            if (theme === 'custom') {
+                // In a real implementation, this would apply custom colors
+                alert('Custom theme configuration would open here');
+            }
+        }
+
+        function updateStatus(message, type = 'info') {
+            const statusElement = document.getElementById('status-message');
+            statusElement.textContent = message;
+            
+            // Reset previous classes
+            statusElement.className = '';
+            
+            // Add type class if specified
+            if (type) {
+                statusElement.classList.add(type);
+            }
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                updateStatus('Email and password are required', 'error');
+                return;
+            }
+            
+            // Check if user exists
+            if (!state.users[email]) {
+                updateStatus('User not found', 'error');
+                return;
+            }
+            
+            // In a real application, we would verify the password hash
+            // For this demo, we'll just check if password is not empty
+            if (!password) {
+                updateStatus('Invalid password', 'error');
+                return;
+            }
+            
+            // Check if 2FA is enabled (simulated)
+            const user = state.users[email];
+            if (user.totpSecret) {
+                const code = prompt('Enter 2FA code:');
+                if (!code) {
+                    updateStatus('2FA code required', 'error');
+                    return;
+                }
+                // In a real app, we would verify the TOTP code
+            }
+            
+            // Login successful
+            state.currentUser = email;
+            localStorage.setItem('abe-currentUser', email);
+            updateStatus('Login successful', 'success');
+            showDashboard();
+            
+            // Log the login
+            logAction(`LOGIN user=${email}`);
+        }
+
+        function handleRegister() {
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const role = document.getElementById('reg-role').value;
+            const department = document.getElementById('reg-department').value;
+            const clearance = parseInt(document.getElementById('reg-clearance').value);
+            const enable2FA = document.getElementById('reg-2fa').checked;
+            
+            if (!email || !password) {
+                updateStatus('Email and password are required', 'error');
+                return;
+            }
+            
+            if (state.users[email]) {
+                updateStatus('User already exists', 'error');
+                return;
+            }
+            
+            // Create user object (in a real app, we would hash the password)
+            state.users[email] = {
+                password: password, // In real app, this would be a hash
+                attributes: {
+                    role: role,
+                    department: department || 'general',
+                    clearance: clearance
+                },
+                createdAt: new Date().toISOString()
+            };
+            
+            // Generate TOTP secret if 2FA is enabled
+            if (enable2FA) {
+                // In a real app, we would generate a real secret
+                state.users[email].totpSecret = 'EXAMPLE_SECRET'; 
+                alert('2FA enabled. Secret: EXAMPLE_SECRET'); // In real app, show QR code
+            }
+            
+            saveData();
+            updateStatus('Registration successful', 'success');
+            document.getElementById('register-modal').style.display = 'none';
+            
+            // Log the registration
+            logAction(`REGISTER user=${email}`);
+        }
+
+        function handleLogout() {
+            logAction(`LOGOUT user=${state.currentUser}`);
+            state.currentUser = null;
+            localStorage.removeItem('abe-currentUser');
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'block';
+            updateStatus('Logged out successfully');
+        }
+
+        function showDashboard() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            
+            // Update user info
+            document.getElementById('user-info').textContent = `Logged in as: ${state.currentUser}`;
+            
+            const user = state.users[state.currentUser];
+            let attributesHtml = '';
+            for (const [key, value] of Object.entries(user.attributes)) {
+                attributesHtml += `<p><strong>${key}:</strong> ${value}</p>`;
+            }
+            document.getElementById('user-attributes').innerHTML = attributesHtml;
+            
+            // Show admin panel if user is admin
+            if (user.attributes.role === 'admin') {
+                document.getElementById('admin-panel').style.display = 'block';
+            } else {
+                document.getElementById('admin-panel').style.display = 'none';
+            }
+            
+            // Load files
+            loadFiles();
+        }
+
+        function loadFiles() {
+            const filesList = document.getElementById('files-list');
+            filesList.innerHTML = '';
+            
+            const searchTerm = document.getElementById('search-files').value.toLowerCase();
+            
+            // Convert files object to array for sorting
+            const filesArray = Object.entries(state.files).map(([id, file]) => ({ id, ...file }));
+            
+            // Sort files
+            filesArray.sort((a, b) => {
+                let aValue = a[state.sortField];
+                let bValue = b[state.sortField];
+                
+                // Convert to string for comparison
+                if (typeof aValue !== 'string') aValue = String(aValue);
+                if (typeof bValue !== 'string') bValue = String(bValue);
+                
+                if (state.sortDirection === 'asc') {
+                    return aValue.localeCompare(bValue);
+                } else {
+                    return bValue.localeCompare(aValue);
+                }
+            });
+            
+            // Add files to list
+            for (const file of filesArray) {
+                // Apply search filter
+                if (searchTerm && 
+                    !file.filename_orig.toLowerCase().includes(searchTerm) && 
+                    !file.owner.toLowerCase().includes(searchTerm)) {
+                    continue;
+                }
+                
+                // Check if user has access to the file
+                const userAttrs = state.users[state.currentUser].attributes;
+                const hasAccess = checkPolicy(userAttrs, file.policy) || 
+                                 (file.shared_with && file.shared_with.includes(state.currentUser));
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${file.filename_orig}</td>
+                    <td>${file.owner}</td>
+                    <td>${JSON.stringify(file.policy).substring(0, 30)}...</td>
+                    <td>${hasAccess ? 'YES' : 'NO'}</td>
+                    <td>${file.shared_with ? file.shared_with.join(', ') : ''}</td>
+                `;
+                
+                // Add click event to show file options
+                row.addEventListener('click', function() {
+                    showFileOptions(file);
+                });
+                
+                filesList.appendChild(row);
+            }
+            
+            // Update sort indicators
+            document.querySelectorAll('.file-list th').forEach(header => {
+                const field = header.getAttribute('data-sort');
+                if (field === state.sortField) {
+                    header.textContent = header.textContent.replace(' ↕', '');
+                    header.textContent += state.sortDirection === 'asc' ? ' ↑' : ' ↓';
+                } else {
+                    header.textContent = header.textContent.replace(/ ↑| ↓/, '') + ' ↕';
+                }
+            });
+        }
+
+        function sortFiles(field) {
+            if (state.sortField === field) {
+                // Toggle direction if same field
+                state.sortDirection = state.sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                // New field, default to ascending
+                state.sortField = field;
+                state.sortDirection = 'asc';
+            }
+            
+            loadFiles();
+        }
+
+        function checkPolicy(userAttrs, policy) {
+            if (!policy) return true;
+            
+            if (policy.all) {
+                // ALL conditions must be satisfied (AND)
+                for (const condition of policy.all) {
+                    if (!checkCondition(userAttrs, condition)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            
+            if (policy.any) {
+                // ANY condition must be satisfied (OR)
+                for (const condition of policy.any) {
+                    if (checkCondition(userAttrs, condition)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            
+            return true;
+        }
+
+        function checkCondition(userAttrs, condition) {
+            const { attr, op, value } = condition;
+            
+            if (!userAttrs.hasOwnProperty(attr)) {
+                return false;
+            }
+            
+            const userValue = userAttrs[attr];
+            
+            switch (op) {
+                case '==': return userValue == value;
+                case '!=': return userValue != value;
+                case '>=': return userValue >= value;
+                case '<=': return userValue <= value;
+                case '>': return userValue > value;
+                case '<': return userValue < value;
+                case 'in': return Array.isArray(value) && value.includes(userValue);
+                case 'contains': return String(userValue).includes(value);
+                default: return false;
+            }
+        }
+
+        function showFileOptions(file) {
+            document.getElementById('file-options-title').textContent = `File Options: ${file.filename_orig}`;
+            
+            const userAttrs = state.users[state.currentUser].attributes;
+            const hasAccess = checkPolicy(userAttrs, file.policy) || 
+                             (file.shared_with && file.shared_with.includes(state.currentUser));
+            
+            const isOwner = file.owner === state.currentUser;
+            
+            let optionsHtml = `
+                <p><strong>Owner:</strong> ${file.owner}</p>
+                <p><strong>Policy:</strong> <pre>${JSON.stringify(file.policy, null, 2)}</pre></p>
+                <p><strong>Your Access:</strong> ${hasAccess ? 'YES' : 'NO'}</p>
+                <p><strong>Shared with:</strong> ${file.shared_with ? file.shared_with.join(', ') : 'None'}</p>
+                <div class="action-buttons">
+            `;
+            
+            if (hasAccess) {
+                optionsHtml += `
+                    <button class="btn btn-primary download-btn">Download / Decrypt</button>
+                    <button class="btn preview-btn">Preview</button>
+                    <button class="btn metadata-btn">Show Metadata</button>
+                `;
+            }
+            
+            if (isOwner) {
+                optionsHtml += `
+                    <button class="btn btn-error delete-btn">Delete File</button>
+                    <button class="btn share-btn">Share / Manage</button>
+                    <button class="btn rotate-btn">Rotate Key</button>
+                `;
+            }
+            
+            optionsHtml += `</div>`;
+            
+            document.getElementById('file-options-content').innerHTML = optionsHtml;
+            
+            // Add event listeners to buttons
+            if (hasAccess) {
+                document.querySelector('.download-btn').addEventListener('click', function() {
+                    downloadFile(file);
+                });
+                
+                document.querySelector('.preview-btn').addEventListener('click', function() {
+                    previewFile(file);
+                });
+                
+                document.querySelector('.metadata-btn').addEventListener('click', function() {
+                    alert(`Metadata for ${file.filename_orig}:\n${JSON.stringify(file, null, 2)}`);
+                });
+            }
+            
+            if (isOwner) {
+                document.querySelector('.delete-btn').addEventListener('click', function() {
+                    deleteFile(file);
+                });
+                
+                document.querySelector('.share-btn').addEventListener('click', function() {
+                    shareFile(file);
+                });
+                
+                document.querySelector('.rotate-btn').addEventListener('click', function() {
+                    rotateKey(file);
+                });
+            }
+            
+            document.getElementById('file-options-modal').style.display = 'flex';
+        }
+
+        function handleUpload() {
+            const fileInput = document.getElementById('file-input');
+            const policyInput = document.getElementById('policy-input');
+            const shareInput = document.getElementById('share-input');
+            
+            if (!fileInput.files.length) {
+                updateStatus('Please select a file', 'error');
+                return;
+            }
+            
+            let policy;
+            try {
+                policy = JSON.parse(policyInput.value);
+            } catch (e) {
+                updateStatus('Invalid policy JSON', 'error');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const sharedWith = shareInput.value.split(',').map(email => email.trim()).filter(email => email);
+            
+            // Simulate upload process
+            const progressBar = document.getElementById('upload-progress');
+            const progressText = document.getElementById('progress-text');
+            let progress = 0;
+            
+            const interval = setInterval(() => {
+                progress += 5;
+                progressBar.style.width = `${progress}%`;
+                progressText.textContent = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    
+                    // Create file record
+                    const fileId = generateId();
+                    state.files[fileId] = {
+                        filename_orig: file.name,
+                        owner: state.currentUser,
+                        policy: policy,
+                        shared_with: sharedWith,
+                        uploaded_at: new Date().toISOString()
+                    };
+                    
+                    saveData();
+                    updateStatus(`File "${file.name}" uploaded successfully`, 'success');
+                    document.getElementById('upload-modal').style.display = 'none';
+                    
+                    // Reset form
+                    fileInput.value = '';
+                    progressBar.style.width = '0%';
+                    progressText.textContent = '0%';
+                    
+                    // Reload files
+                    loadFiles();
+                    
+                    // Log the upload
+                    logAction(`UPLOAD user=${state.currentUser} file=${file.name} size=${file.size}`);
+                }
+            }, 100);
+        }
+
+        function downloadFile(file) {
+            // In a real application, this would decrypt and download the file
+            updateStatus(`Downloading "${file.filename_orig}"...`, 'info');
+            document.getElementById('file-options-modal').style.display = 'none';
+            
+            // Simulate download delay
+            setTimeout(() => {
+                updateStatus(`Downloaded "${file.filename_orig}"`, 'success');
+                logAction(`DOWNLOAD user=${state.currentUser} file=${file.filename_orig}`);
+            }, 1500);
+        }
+
+        function previewFile(file) {
+            // In a real application, this would decrypt and preview the file
+            document.getElementById('preview-text').innerHTML = `
+                <h4>Preview of ${file.filename_orig}</h4>
+                <p>This is a simulated preview. In a real application, the file would be decrypted and displayed here.</p>
+                <p>File policy: ${JSON.stringify(file.policy)}</p>
+            `;
+            document.getElementById('preview-image').innerHTML = '';
+            document.getElementById('file-options-modal').style.display = 'none';
+            
+            logAction(`PREVIEW user=${state.currentUser} file=${file.filename_orig}`);
+        }
+
+        function deleteFile(file) {
+            if (!confirm(`Are you sure you want to delete "${file.filename_orig}"? This action cannot be undone.`)) {
+                return;
+            }
+            
+            // Find and remove the file
+            for (const [id, f] of Object.entries(state.files)) {
+                if (f.filename_orig === file.filename_orig && f.owner === state.currentUser) {
+                    delete state.files[id];
+                    break;
+                }
+            }
+            
+            saveData();
+            updateStatus(`Deleted "${file.filename_orig}"`, 'success');
+            document.getElementById('file-options-modal').style.display = 'none';
+            loadFiles();
+            
+            logAction(`DELETE user=${state.currentUser} file=${file.filename_orig}`);
+        }
+
+        function shareFile(file) {
+            const emails = prompt('Enter emails to share with (comma separated):', 
+                                file.shared_with ? file.shared_with.join(', ') : '');
+            
+            if (emails === null) return;
+            
+            const emailList = emails.split(',').map(email => email.trim()).filter(email => email);
+            
+            // Update the file
+            for (const [id, f] of Object.entries(state.files)) {
+                if (f.filename_orig === file.filename_orig && f.owner === state.currentUser) {
+                    f.shared_with = emailList;
+                    break;
+                }
+            }
+            
+            saveData();
+            updateStatus(`Sharing updated for "${file.filename_orig}"`, 'success');
+            document.getElementById('file-options-modal').style.display = 'none';
+            
+            logAction(`SHARE user=${state.currentUser} file=${file.filename_orig} with=${emailList.join(',')}`);
+        }
+
+        function rotateKey(file) {
+            const oldPassword = prompt('Enter your current password:');
+            if (!oldPassword) return;
+            
+            // In a real application, we would verify the password
+            if (oldPassword !== state.users[state.currentUser].password) {
+                updateStatus('Incorrect password', 'error');
+                return;
+            }
+            
+            const newPassword = prompt('Enter new password:');
+            if (!newPassword) return;
+            
+            // Update user password (in real app, we would re-encrypt the file key)
+            state.users[state.currentUser].password = newPassword;
+            saveData();
+            
+            updateStatus('Key rotated successfully', 'success');
+            document.getElementById('file-options-modal').style.display = 'none';
+            
+            logAction(`ROTATE user=${state.currentUser} file=${file.filename_orig}`);
+        }
+
+        function addCondition() {
+            const conditionsContainer = document.getElementById('conditions-container');
+            const newCondition = document.createElement('div');
+            newCondition.className = 'condition';
+            newCondition.innerHTML = `
+                <select class="condition-attr">
+                    <option value="role">Role</option>
+                    <option value="department">Department</option>
+                    <option value="clearance">Clearance</option>
+                    <option value="email">Email</option>
+                </select>
+                <select class="condition-op">
+                    <option value="==">Equals</option>
+                    <option value="!=">Not Equals</option>
+                    <option value=">=">Greater or Equal</option>
+                    <option value="<=">Less or Equal</option>
+                    <option value=">">Greater Than</option>
+                    <option value="<">Less Than</option>
+                    <option value="in">In</option>
+                    <option value="contains">Contains</option>
+                </select>
+                <input type="text" class="condition-value" placeholder="Value">
+                <button class="btn btn-error remove-condition">&times;</button>
+            `;
+            
+            conditionsContainer.appendChild(newCondition);
+            
+            // Add event listener to remove button
+            newCondition.querySelector('.remove-condition').addEventListener('click', function() {
+                conditionsContainer.removeChild(newCondition);
+                updatePolicyResult();
+            });
+            
+            // Add event listeners to update policy when conditions change
+            const inputs = newCondition.querySelectorAll('select, input');
+            inputs.forEach(input => {
+                input.addEventListener('change', updatePolicyResult);
+                input.addEventListener('input', updatePolicyResult);
+            });
+            
+            updatePolicyResult();
+        }
+
+        function updatePolicyResult() {
+            const policyType = document.querySelector('input[name="policy-type"]:checked').value;
+            const conditions = [];
+            
+            document.querySelectorAll('.condition').forEach(condition => {
+                const attr = condition.querySelector('.condition-attr').value;
+                const op = condition.querySelector('.condition-op').value;
+                const value = condition.querySelector('.condition-value').value;
+                
+                if (attr && op && value) {
+                    let formattedValue = value;
+                    
+                    // Handle special cases
+                    if (op === 'in') {
+                        // Try to parse as JSON array, or convert comma-separated values
+                        try {
+                            formattedValue = JSON.parse(value);
+                        } catch (e) {
+                            formattedValue = value.split(',').map(v => v.trim());
+                        }
+                    } else if (attr === 'clearance') {
+                        formattedValue = parseInt(value) || 1;
+                    }
+                    
+                    conditions.push({
+                        attr: attr,
+                        op: op,
+                        value: formattedValue
+                    });
+                }
+            });
+            
+            const policy = conditions.length ? { [policyType]: conditions } : {};
+            document.getElementById('policy-result').value = JSON.stringify(policy, null, 2);
+        }
+
+        function loadLogs() {
+            const logEntries = document.getElementById('log-entries');
+            logEntries.innerHTML = '';
+            
+            const userFilter = document.getElementById('log-user-filter').value.toLowerCase();
+            const actionFilter = document.getElementById('log-action-filter').value.toLowerCase();
+            
+            // Get logs from localStorage or use sample logs
+            const logs = JSON.parse(localStorage.getItem('abe-logs') || '[]');
+            
+            if (logs.length === 0) {
+                // Add some sample logs if none exist
+                logs.push(
+                    `[2023-05-15 14:32:10] LOGIN user=admin@example.com`,
+                    `[2023-05-15 14:28:45] UPLOAD user=user@example.com file_id=abc123 size=5242880`,
+                    `[2023-05-15 13:15:22] DOWNLOAD user=john@example.com file_id=def456 saved_as=report.pdf`,
+                    `[2023-05-15 12:45:18] REGISTER user=newuser@example.com`,
+                    `[2023-05-15 11:30:05] LOGOUT user=admin@example.com`
+                );
+            }
+            
+            // Add current session logs
+            const currentSessionLogs = JSON.parse(sessionStorage.getItem('abe-session-logs') || '[]');
+            logs.push(...currentSessionLogs);
+            
+            // Display logs with filters applied
+            logs.reverse().forEach(log => {
+                if (userFilter && !log.toLowerCase().includes(`user=${userFilter}`)) {
+                    return;
+                }
+                
+                if (actionFilter && !log.toLowerCase().includes(actionFilter)) {
+                    return;
+                }
+                
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                entry.textContent = log;
+                logEntries.appendChild(entry);
+            });
+        }
+
+        function logAction(message) {
+            const timestamp = new Date().toLocaleString();
+            const logEntry = `[${timestamp}] ${message}`;
+            
+            // Store in session storage for current session
+            const sessionLogs = JSON.parse(sessionStorage.getItem('abe-session-logs') || '[]');
+            sessionLogs.push(logEntry);
+            sessionStorage.setItem('abe-session-logs', JSON.stringify(sessionLogs));
+            
+            // Also store in local storage for persistence
+            const logs = JSON.parse(localStorage.getItem('abe-logs') || '[]');
+            logs.push(logEntry);
+            localStorage.setItem('abe-logs', JSON.stringify(logs));
+        }
+
+        function loadUsers() {
+            const userList = document.getElementById('user-list');
+            userList.innerHTML = '';
+            
+            for (const [email, user] of Object.entries(state.users)) {
+                const userDiv = document.createElement('div');
+                userDiv.className = 'log-entry';
+                userDiv.innerHTML = `
+                    <strong>${email}</strong> 
+                    (Role: ${user.attributes.role}, 
+                    Department: ${user.attributes.department}, 
+                    Clearance: ${user.attributes.clearance})
+                `;
+                userDiv.setAttribute('data-email', email);
+                userList.appendChild(userDiv);
+            }
+            
+            // Add event listeners for user selection
+            userList.querySelectorAll('.log-entry').forEach(div => {
+                div.addEventListener('click', function() {
+                    userList.querySelectorAll('.log-entry').forEach(d => d.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Add event listeners for user management buttons
+            document.getElementById('delete-user-btn').addEventListener('click', deleteUser);
+            document.getElementById('rotate-user-btn').addEventListener('click', rotateUserKey);
+        }
+
+        function deleteUser() {
+            const selected = document.querySelector('#user-list .selected');
+            if (!selected) {
+                alert('Please select a user first');
+                return;
+            }
+            
+            const email = selected.getAttribute('data-email');
+            if (email === state.currentUser) {
+                alert('You cannot delete your own account');
+                return;
+            }
+            
+            if (!confirm(`Are you sure you want to delete user ${email}? This will also delete all their files.`)) {
+                return;
+            }
+            
+            // Delete user's files
+            for (const [id, file] of Object.entries(state.files)) {
+                if (file.owner === email) {
+                    delete state.files[id];
+                }
+            }
+            
+            // Delete user
+            delete state.users[email];
+            saveData();
+            
+            updateStatus(`Deleted user ${email}`, 'success');
+            loadUsers();
+            
+            logAction(`ADMIN_DELETE user=${email} by=${state.currentUser}`);
+        }
+
+        function rotateUserKey() {
+            const selected = document.querySelector('#user-list .selected');
+            if (!selected) {
+                alert('Please select a user first');
+                return;
+            }
+            
+            const email = selected.getAttribute('data-email');
+            const newPassword = prompt(`Enter new password for ${email}:`);
+            if (!newPassword) return;
+            
+            // Update user password (in real app, we would re-encrypt all their files)
+            state.users[email].password = newPassword;
+            saveData();
+            
+            updateStatus(`Key rotation completed for ${email}`, 'success');
+            
+            logAction(`ADMIN_ROTATE user=${email} by=${state.currentUser}`);
+        }
+
+        function handleCleanBlobs() {
+            if (!confirm('This will remove metadata for files that no longer exist. Continue?')) {
+                return;
+            }
+            
+            // In a real application, we would check which files actually exist
+            // For this demo, we'll just count the files
+            const count = Object.keys(state.files).length;
+            
+            updateStatus(`Cleaned up metadata for ${count} files`, 'success');
+            
+            logAction(`CLEAN_BLOBS by=${state.currentUser} count=${count}`);
+        }
+
+        function handleGlobalKeyRotation() {
+            alert('Global key rotation would require re-encrypting all files. This feature is not implemented in this demo.');
+        }
+
+        function generateId() {
+            return Math.random().toString(36).substring(2) + Date.now().toString(36);
+        }
+    </script>
+</body>
+</html>
